@@ -1,0 +1,11 @@
+{
+  "name": "tls-inventory-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "YAML-driven TLS and STARTTLS connection inventory with X.509 certificate extension analysis",
+  "license": "GPL",
+  "engines": { "node": ">=20" },
+  "bin": { "tls-inventory": "./index.js" },
+  "scripts": { "start": "node index.js --config targets.yaml", "test": "node --test" },
+  "dependencies": { "yaml": "^2.8.1" }
+}

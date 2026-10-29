@@ -1,0 +1,52 @@
+# Define a default TLS policy for every target and override it per host.
+concurrency: 5
+timeoutMs: 10000
+
+defaults:
+  tls:
+    minVersion: TLSv1.2
+    maxVersion: TLSv1.3
+    rejectUnauthorized: false # Audit mode: inspect even self-signed/untrusted certs.
+    # ciphers: 'HIGH:!aNULL:!MD5'
+    # sigalgs: 'rsa_pss_rsae_sha256:ecdsa_secp256r1_sha256'
+    # ecdhCurve: 'X25519:prime256v1'
+    # ALPNProtocols: ['h2', 'http/1.1']
+    # secureOptions: [SSL_OP_NO_COMPRESSION]
+
+targets:
+  # Standard TLS on 443. SNI defaults to the target DNS hostname.
+  - id: public-https
+    host: example.com
+    port: 443
+
+  # Connect directly to an IP while presenting a separate DNS SNI name.
+  - id: dns-over-tls
+    host: 1.1.1.1
+    port: 853
+    sni: cloudflare-dns.com
+    verifyHostname: cloudflare-dns.com
+
+  # SMTP explicit STARTTLS: connect in cleartext, issue EHLO/STARTTLS,
+  # then upgrade the same TCP connection to TLS.
+  - id: smtp-submission
+    host: smtp.gmail.com
+    port: 587
+    starttls:
+      protocol: smtp
+      ehloName: tls-inventory.local
+
+  # Other supported protocol names: imap, pop3, ftp, ldap.
+  # - id: ldap-starttls
+  #   host: ldap.example.org
+  #   port: 389
+  #   starttls: ldap
+
+  # For a legacy TLS version probe (only if OpenSSL permits it):
+  # - id: old-server
+  #   host: old.example.org
+  #   port: 443
+  #   sni: false
+  #   tls:
+  #     minVersion: TLSv1
+  #     maxVersion: TLSv1
+  #     ciphers: 'DEFAULT:@SECLEVEL=0'
